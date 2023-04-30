@@ -72,10 +72,11 @@ export default {
         let totalPrice = ref(0);
         if (JSON.parse(localStorage.getItem("cartData")) != null) {
             data.cartData = JSON.parse(localStorage.getItem("cartData"));
-        }
-        const gia = computed(() => {
+        }       
+        const gia = computed(() => {           
             return data.cartData.reduce((accumulator, currentValue) => accumulator + parseFloat(currentValue.gia), totalPrice.value);
         });
+        localStorage.setItem("cartData",JSON.stringify(data.cartData));
         function deleteItemInCart(id) {
             let text = "Bạn có muốn đăng xuất không";
             if (confirm(text) == true) {

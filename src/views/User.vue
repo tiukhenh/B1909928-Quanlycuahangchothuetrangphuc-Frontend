@@ -78,7 +78,7 @@ export default {
         }
         getAllUsers();
         let ketqualoc = computed(() => {
-            return data.listUser.filter((e) => e.userName.toUpperCase().includes(searchText.value.toUpperCase()));
+            return data.listUser.filter((e) => e.userName.toUpperCase().includes(searchText.value.toUpperCase()) || e.phone.toUpperCase().includes(searchText.value.toUpperCase()));
         })
         return {
             ketqualoc,

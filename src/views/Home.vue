@@ -18,21 +18,7 @@
             <Catalog />
         </div>
         <div class="col-9">
-            <div class="mr-auto text-violet ">
-                <h4><i class="far fa-chart-bar"></i> Hoạt động hôm nay:</h4>
-            </div>
-            <div class="row">
-                <div class=" card backgound-violet col-3 ml-2">
-                    <div class="card-body">
-                        <h6 class="text-white"><i class="fas fa-shopping-cart text-white"></i> Số đơn hàng: 0</h6>
-                    </div>
-                </div>
-                <div class=" card backgound-violet col-3 ml-2">
-                    <div class="card-body">
-                        <h6 class="text-white"><i class="fas fa-redo text-white"></i> Khách trả hàng: 0</h6>
-                    </div>
-                </div>
-            </div>
+            <CurrentActivity/>
             <div>
                 <button class="btn btn-sm btn-violet mt-2" @click="goToAddItem">
                     <i class="fas fa-plus"></i> Thêm mới sản phẩm
@@ -54,7 +40,9 @@
                             <tr @click="chooseItem(item._id)" class="text-dark">
                                 <td>{{ item.ten }}</td>
                                 <td>{{ item.mauSac }}</td>
-                                <td>{{ item.gia }}</td>
+                                <td>{{ new Intl.NumberFormat('vi-VN', {
+                                        style: 'currency', currency: 'VND'
+                                    }).format(item.gia * 1000) }}</td>
                                 <td v-if="item.tinhTrang">đang cho thuê</td>
                                 <td v-else> còn trống </td>
                                 <td style="cursor: pointer;">
@@ -84,7 +72,9 @@
                             </div>
                             <div class="p-1">
                                 <strong>Giá:</strong>
-                                {{ data.item.gia }}
+                                {{ new Intl.NumberFormat('vi-VN', {
+                                        style: 'currency', currency: 'VND'
+                                    }).format(data.item.gia * 1000) }}
                             </div>
                             <div class="p-1">
                                 <strong>Tình trạng:&nbsp;</strong>
@@ -116,7 +106,9 @@
                                 <tr class="text-dark">
                                     <td>{{ item.ten }}</td>
                                     <td>{{ item.mauSac }}</td>
-                                    <td>{{ item.gia }}</td>
+                                    <td>{{ new Intl.NumberFormat('vi-VN', {
+                                        style: 'currency', currency: 'VND'
+                                    }).format(item.gia * 1000) }}</td>
                                     <td @click="deleteItemInCart(item._id)"><i class="fas fa-trash-alt text-violet"></i>
                                     </td>
                                 </tr>
@@ -140,6 +132,7 @@
 import AppHeader from "../components/AppHeader.vue";
 import AppFooter from "../components/AppFooter.vue";
 import Catalog from "../components/Catalog.vue";
+import CurrentActivity from "../components/CurrentActivity.vue";
 import axios from "axios";
 import { reactive, computed, ref } from "vue";
 import { useRouter } from "vue-router";
@@ -149,6 +142,7 @@ export default {
         AppHeader,
         AppFooter,
         Catalog,
+        CurrentActivity,
     },
     setup() {
         const router = useRouter();

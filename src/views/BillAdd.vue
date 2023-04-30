@@ -44,6 +44,11 @@
                         <ErrorMessage name="address" class="error-feedback" />
                     </div>
                     <div class="form-group">
+                        <label for="totalPrice">Tổng tiền</label>
+                        <Field name="totalPrice" disabled type="text" class="form-control" v-model="showTotal" />
+                        <ErrorMessage name="totalPrice" class="error-feedback" />
+                    </div>
+                    <div class="form-group">
                         <button type="submit" class="btn btn-violet">Lưu</button>
                     </div>
                 </Form>
@@ -55,7 +60,7 @@
 import * as yup from "yup";
 import { Form, Field, ErrorMessage } from "vee-validate";
 import { useRouter } from "vue-router";
-import { reactive } from "vue";
+import { ref, reactive } from "vue";
 import router from "../router";
 import axios from "axios";
 export default {
@@ -77,21 +82,33 @@ export default {
                 .max(50, "Tên có nhiều nhất 50 ký tự."),
         });
         const data = reactive({
-            bill: {}
+            bill: {},
+            cartData: [],
         });
+        const showTotal = ref("");
+        const totalPrice = ref(0);
+        const obj = JSON.parse(localStorage.getItem("cartData"));
+        if(obj){
+            data.cartData = obj;
+            for(var i = 0;i<data.cartData.length;i++){
+                totalPrice.value += parseFloat(data.cartData[i].gia);
+            }
+            showTotal.value = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(totalPrice.value*1000);
+        }
         async function submitItem() {
             data.bill.tinhTrang = false;
+            data.bill.tongTien = totalPrice.value;
             const date = new Date();
             let day = date.getDate();
             let month = date.getMonth() + 1;
             let year = date.getFullYear();
             let currentDate = `${day}-${month}-${year}`;
             data.bill.ngaylap = currentDate;
+            data.bill.ngaytrahientai = data.bill.ngaytra;
             data.bill.products = JSON.parse(localStorage.getItem("cartData"));
             const response = await axios.post("http://localhost:3000/api/bill",data.bill);
             // console.log(data.bill.products);
             for(var i =0 ;i<data.bill.products.length;i++) {
-                console.log(data.bill.products[i]._id);
                 await axios.put(`http://localhost:3000/api/item/tinhtrang/${data.bill.products[i]._id}`);
             }
             localStorage.removeItem("cartData");
@@ -99,6 +116,7 @@ export default {
 
         }
         return {
+            showTotal,
             submitItem,
             itemFormSchema,
             data,

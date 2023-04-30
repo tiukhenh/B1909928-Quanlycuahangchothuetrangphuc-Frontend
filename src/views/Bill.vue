@@ -15,24 +15,10 @@
     </div>
     <div class="mt-2 row d-flex justify-content-around">
         <div class="col-2 backgound-violet rounded">
-            <Catalog/>
+            <Catalog />
         </div>
         <div class="col-9">
-            <div class="mr-auto text-violet ">
-                <h4><i class="far fa-chart-bar"></i> Hoạt động hôm nay:</h4>
-            </div>
-            <div class="row">
-                <div class=" card backgound-violet col-3 ml-2">
-                    <div class="card-body">
-                        <h6 class="text-white"><i class="fas fa-shopping-cart text-white"></i> Số đơn hàng: 0</h6>
-                    </div>
-                </div>
-                <div class=" card backgound-violet col-3 ml-2">
-                    <div class="card-body">
-                        <h6 class="text-white"><i class="fas fa-redo text-white"></i> Khách trả hàng: 0</h6>
-                    </div>
-                </div>
-            </div>
+            <CurrentActivity/>
             <div class="row">
                 <div class="col-8 p-0">
                     <table class="table mt-2 table-color">
@@ -45,17 +31,23 @@
                                 <th scope="col">Địa chỉ</th>
                                 <th scope="col">Tổng tiền</th>
                                 <th scope="col">Tình trạng</th>
+                                <th scope="col"></th>
                             </tr>
                         </thead>
                         <tbody v-for="(bill, index) in ketqualoc" :key="bill._id">
-                            <tr  @click="chooseBill(bill._id)" class="text-dark">
+                            <tr @click="chooseBill(bill._id)" class="text-dark">
                                 <td>{{ bill.ngaymuon }}</td>
                                 <td>{{ bill.ngaytra }}</td>
                                 <td>{{ bill.nameCustomer }}</td>
                                 <td>{{ bill.phone }}</td>
                                 <td>{{ bill.address }}</td>
+                                <td>{{ new Intl.NumberFormat('vi-VN', {
+                                    style: 'currency', currency: 'VND'
+                                }).format(bill.tongTien * 1000) }}</td>
                                 <td v-if="bill.tinhTrang">đã trả</td>
                                 <td v-else> đang thuê </td>
+                                <td v-if="bill.tinhTrang"></td>
+                                <td v-else @click="returnBill(bill._id)"><i class="fas fa-undo"></i></td>
                             </tr>
                         </tbody>
                     </table>
@@ -74,16 +66,20 @@
                                 <strong>Số điện thoại:</strong>
                                 {{ data.bill.phone }}
                             </div>
-                            <!-- <div class="p-1">
-                                <strong>Sản phẩm</strong>
-                                {{
-                                    console.log(data.bill.products[i]._id)
-                                }}
-                            </div> -->
-                            <!-- <div class="p-1">
-                                <strong>Giá:</strong>
-                                {{ data.bill.gia }}
-                            </div> -->
+                            <div class="p-1">
+                                <strong>CCCD:</strong>
+                                {{ data.bill.indentification }}
+                            </div>
+                            <div class="p-1">
+                                <strong>Danh sách sản phẩm</strong>
+                                <ol>
+                                    <li v-for="(item, index) in data.bill.products" :key="index"><span>Tên sản pham: {{
+                                        item.ten }}</span><br><span>Gia: {{ new Intl.NumberFormat('vi-VN', {
+        style: 'currency', currency: 'VND'
+    }).format(item.gia * 1000) }}</span></li>
+                                </ol>
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -96,8 +92,9 @@
 import AppHeader from "../components/AppHeader.vue";
 import AppFooter from "../components/AppFooter.vue";
 import Catalog from "../components/Catalog.vue";
+import CurrentActivity from "../components/CurrentActivity.vue";
 import axios from "axios";
-import { reactive, computed, ref } from "vue";
+import { reactive, computed, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 
 export default {
@@ -105,6 +102,7 @@ export default {
         AppHeader,
         AppFooter,
         Catalog,
+        CurrentActivity,
     },
     setup() {
         const router = useRouter();
@@ -112,13 +110,16 @@ export default {
             listBill: [],
             bill: {}
         });
+        const isChecked = ref(false);
         const searchText = ref("");
+        const count = ref(0);
         //ref => data= ref(2) =>data.value = 3
         //data = reactive([]); => data.push(1,2);
         async function getAllBills() {
             try {
                 const response = await axios.get("http://localhost:3000/api/bill");
                 data.listBill = response.data;
+                
             } catch (e) {
 
             }
@@ -128,12 +129,38 @@ export default {
         let ketqualoc = computed(() => {
             return data.listBill.filter((e) => e.nameCustomer.toUpperCase().includes(searchText.value.toUpperCase()) || e.phone.toUpperCase().includes(searchText.value.toUpperCase()));
         })
+        watch(isChecked, async () => {
+
+            try {
+                const res = await axios.get("http://localhost:3000/api/bill");
+                data.listBill = res.data;
+            } catch (error) {
+                res.status(500).json({ message: error.message });
+            }
+        })
+        // let ketqualoc
         async function chooseBill(id) {
-            console.log(id);
             const response = await axios.get(`http://localhost:3000/api/bill/${id}`);
             data.bill = response.data;
         }
+        async function returnBill(id) {
+            let text = "Bạn muốn xác nhận trả hàng?";
+            if (confirm(text) == true) {
+                await axios.put(`http://localhost:3000/api/bill/${id}`);
+                const response = await axios.get(`http://localhost:3000/api/bill/${id}`);
+                
+
+                for (var i = 0; i < response.data.products.length; i++) {
+
+                    await axios.put(`http://localhost:3000/api/item/tinhtrang/${response.data.products[i]._id}`);
+                }
+                isChecked.value = !isChecked.value;
+            }
+        }
+
         return {
+            count,
+            returnBill,
             ketqualoc,
             searchText,
             data,
