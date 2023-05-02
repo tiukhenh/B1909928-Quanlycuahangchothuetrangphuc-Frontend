@@ -18,12 +18,13 @@
             <Catalog />
         </div>
         <div class="col-9">
-            <CurrentActivity/>
+            <CurrentActivity :status="isChecked"/>
             <div class="row">
                 <div class="col-8 p-0">
                     <table class="table mt-2 table-color">
                         <thead class="backgound-violet text-white">
                             <tr>
+                                <th scope="col">Ngày trả hienj tại</th>
                                 <th scope="col">Ngày thuê</th>
                                 <th scope="col">Ngày trả</th>
                                 <th scope="col">Tên KH</th>
@@ -36,6 +37,7 @@
                         </thead>
                         <tbody v-for="(bill, index) in ketqualoc" :key="bill._id">
                             <tr @click="chooseBill(bill._id)" class="text-dark">
+                                <td>{{ bill.ngaytrahientai }}</td>
                                 <td>{{ bill.ngaymuon }}</td>
                                 <td>{{ bill.ngaytra }}</td>
                                 <td>{{ bill.nameCustomer }}</td>
@@ -112,14 +114,13 @@ export default {
         });
         const isChecked = ref(false);
         const searchText = ref("");
-        const count = ref(0);
         //ref => data= ref(2) =>data.value = 3
         //data = reactive([]); => data.push(1,2);
         async function getAllBills() {
             try {
                 const response = await axios.get("http://localhost:3000/api/bill");
                 data.listBill = response.data;
-                
+
             } catch (e) {
 
             }
@@ -148,18 +149,19 @@ export default {
             if (confirm(text) == true) {
                 await axios.put(`http://localhost:3000/api/bill/${id}`);
                 const response = await axios.get(`http://localhost:3000/api/bill/${id}`);
-                
+
 
                 for (var i = 0; i < response.data.products.length; i++) {
 
                     await axios.put(`http://localhost:3000/api/item/tinhtrang/${response.data.products[i]._id}`);
                 }
+                await axios.put(`http://localhost:3000/api/bill/${id}/return`)
                 isChecked.value = !isChecked.value;
             }
         }
 
         return {
-            count,
+            isChecked,
             returnBill,
             ketqualoc,
             searchText,

@@ -63,3 +63,6 @@ a,
 .text-dark {
   color: black;
 }
+.activ {
+  color: hsl(284.12deg 100% 37%);
+}

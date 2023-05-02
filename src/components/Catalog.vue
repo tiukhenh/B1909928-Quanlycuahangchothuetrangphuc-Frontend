@@ -21,7 +21,13 @@
                             <a href="" class="text-center text-violet">Đơn hàng</a>
                         </router-link>
                     </li>
-                    <li class="list-group-item"><a href="" class="text-center text-violet">Doanh thu </a></li>
+                    <li class="list-group-item">
+                        <router-link :to="{
+                                name: 'revenue',
+                            }">
+                            <a href="" class="text-center text-violet">Doanh thu </a>
+                        </router-link>
+                    </li>
                     <li class="list-group-item">
                         <router-link :to="{
                                 name: 'cart',
