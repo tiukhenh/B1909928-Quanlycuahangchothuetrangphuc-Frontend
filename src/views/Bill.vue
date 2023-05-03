@@ -17,14 +17,14 @@
         <div class="col-2 backgound-violet rounded">
             <Catalog />
         </div>
-        <div class="col-9">
+        <div class="col-10">
             <CurrentActivity :status="isChecked"/>
             <div class="row">
-                <div class="col-8 p-0">
+                <div class="col-9">
                     <table class="table mt-2 table-color">
                         <thead class="backgound-violet text-white">
                             <tr>
-                                <th scope="col">Ngày trả hienj tại</th>
+                                <th scope="col">Mã hóa đơn</th>
                                 <th scope="col">Ngày thuê</th>
                                 <th scope="col">Ngày trả</th>
                                 <th scope="col">Tên KH</th>
@@ -37,7 +37,7 @@
                         </thead>
                         <tbody v-for="(bill, index) in ketqualoc" :key="bill._id">
                             <tr @click="chooseBill(bill._id)" class="text-dark">
-                                <td>{{ bill.ngaytrahientai }}</td>
+                                <td>{{ bill._id }}</td>
                                 <td>{{ bill.ngaymuon }}</td>
                                 <td>{{ bill.ngaytra }}</td>
                                 <td>{{ bill.nameCustomer }}</td>
@@ -54,7 +54,7 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="col-4 d-flex align-items-end flex-column bd-highlight mb-3 pr-0">
+                <div class="col-3 d-flex align-items-end flex-column bd-highlight mb-3 pr-0">
                     <div v-if="Object.keys(data.bill).length != 0">
                         <h4 class="text-violet">
                             Chi tiết hóa đơn
@@ -128,7 +128,7 @@ export default {
         }
         getAllBills();
         let ketqualoc = computed(() => {
-            return data.listBill.filter((e) => e.nameCustomer.toUpperCase().includes(searchText.value.toUpperCase()) || e.phone.toUpperCase().includes(searchText.value.toUpperCase()));
+            return data.listBill.filter((e) =>e._id.toUpperCase().includes(searchText.value.toUpperCase()) || e.nameCustomer.toUpperCase().includes(searchText.value.toUpperCase()) || e.phone.toUpperCase().includes(searchText.value.toUpperCase()));
         })
         watch(isChecked, async () => {
 

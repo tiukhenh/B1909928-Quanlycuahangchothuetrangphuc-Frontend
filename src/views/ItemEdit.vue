@@ -68,12 +68,12 @@ export default {
         const data = reactive({
             item: {}
         });
-        console.log(id);
+        // console.log(id);
         async function getItem() {
             const response = await axios.get(`http://localhost:3000/api/item/${id}`);
             data.item = response.data;
-            console.log(response);
-            console.log(data.item);
+            // console.log(response);
+            // console.log(data.item);
         }
         getItem()
         async function submitItem() {

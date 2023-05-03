@@ -25,10 +25,11 @@
                 </button>
             </div>
             <div class="row">
-                <div class="col-7">
+                <div class="col-8">
                     <table class="table mt-2 table-color">
                         <thead class="backgound-violet text-white">
                             <tr>
+                                <th scope="col">Id</th>
                                 <th scope="col">Tên</th>
                                 <th scope="col">Màu sắc</th>
                                 <th scope="col">Giá</th>
@@ -38,6 +39,7 @@
                         </thead>
                         <tbody v-for="(item, index) in ketqualoc" :key="item._id">
                             <tr @click="chooseItem(item._id)" class="text-dark">
+                                <td>{{ item._id }}</td>
                                 <td>{{ item.ten }}</td>
                                 <td>{{ item.mauSac }}</td>
                                 <td>{{ new Intl.NumberFormat('vi-VN', {
@@ -52,7 +54,7 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="col-5 d-flex align-items-start flex-column bd-highlight mb-3">
+                <div class="col-4 d-flex align-items-start flex-column bd-highlight mb-3">
                     <div v-if="Object.keys(data.item).length != 0">
                         <h4 class="text-violet">
                             Chi tiết Sản phẩm
@@ -117,7 +119,9 @@
                             <tr class="text-dark">
                                 <td></td>
                                 <td>Tổng tiền:</td>
-                                <td>{{ gia }}</td>
+                                <td>{{ new Intl.NumberFormat('vi-VN', {
+                                        style: 'currency', currency: 'VND'
+                                    }).format(gia * 1000) }}</td>
                                 <td></td>
                             </tr>
                         </table>
@@ -171,7 +175,7 @@ export default {
             router.push("/items");
         }
         let ketqualoc = computed(() => {
-            return data.listItem.filter((e) => e.mauSac.toUpperCase().includes(searchText.value.toUpperCase()) || e.ten.toUpperCase().includes(searchText.value.toUpperCase()) || e.gia.toUpperCase().includes(searchText.value.toUpperCase()));
+            return data.listItem.filter((e) =>e._id.toUpperCase().includes(searchText.value.toUpperCase()) || e.mauSac.toUpperCase().includes(searchText.value.toUpperCase()) || e.ten.toUpperCase().includes(searchText.value.toUpperCase()) || e.gia.toUpperCase().includes(searchText.value.toUpperCase()));
         })
         async function addToCart(id) {
             try {
@@ -195,8 +199,6 @@ export default {
 
                         localStorage.setItem("cartData", JSON.stringify(data.cartData));
 
-
-                        console.log(data.cartData);
                     } else {
                         alert("Sản phẩm đã được thêm vào trước đó!");
                     }

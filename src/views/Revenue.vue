@@ -20,7 +20,7 @@
             </h4>
             <h6>Hôm nay: {{ currentDate }}</h6>
             <div>
-                <table class="table mt-2">
+                <table class="table mt-2 table-color">
                     <thead class="backgound-violet text-white">
                         <tr>
                             <th scope="col">ID hóa đơn</th>
@@ -30,12 +30,12 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(bill, index) in aftersum" :key="bill._id">
+                        <tr v-for="(bill, index) in aftersum" :key="bill._id" class="text-dark">
                             <td>{{ bill._id }}</td>
                             <td>{{ bill.nameCustomer }}</td>
                             <td>
-                                <ol v-for="(item, index) in bill.products" :key="index">
-                                    <li>{{ item.ten }}</li>
+                                <ol >
+                                    <li v-for="(item, index) in bill.products" :key="index">{{ item.ten }}</li>
                                 </ol>
                             </td>
                             <td>{{ new Intl.NumberFormat('vi-VN', {
@@ -48,9 +48,9 @@
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td>Tổng: {{ new Intl.NumberFormat('vi-VN', {
+                        <td  class="text-dark"><strong>Tổng: {{ new Intl.NumberFormat('vi-VN', {
                             style: 'currency', currency: 'VND'
-                        }).format(sum * 1000) }}</td>
+                        }).format(total * 1000) }}</strong></td>
                     </tr>
                 </table>
 
@@ -64,7 +64,7 @@ import AppHeader from "../components/AppHeader.vue";
 import AppFooter from "../components/AppFooter.vue";
 import Catalog from "../components/Catalog.vue";
 import axios from "axios";
-import { reactive, ref, computed } from "vue";
+import { reactive, ref, computed, watch, watchEffect } from "vue";
 import { useRouter } from "vue-router";
 
 export default {
@@ -82,33 +82,34 @@ export default {
         const data = reactive({
             listBill: [],
         });
-        const sum = ref(0);
+        let sum = ref(0);
         //ref => data= ref(2) =>data.value = 3
         //data = reactive([]); => data.push(1,2);
         async function getAllBills() {
             try {
                 const response = await axios.get("http://localhost:3000/api/bill");
                 data.listBill = response.data;
-                for (var i = 0; i < data.listBill.length; i++) {
-                    if (data.listBill[i] == currentDate1){
-                       sum.value += data.listBill[i].tongTien ; 
-                    }
-                    
-                }
-
             } catch (e) {
 
             }
 
         }
         getAllBills();
+        const total = computed(() => {
+            for(var i =0 ;i<data.listBill.length;i++){
+                if(data.listBill[i].ngaylap == currentDate1){
+                    sum.value += data.listBill[i].tongTien ; 
+                }
+            }
+            return sum.value;
+        });
         let aftersum = computed(() => {
             return data.listBill.filter((e) => e.ngaylap == currentDate1);
         })
-
+    
         return {
             aftersum,
-            sum,
+            total,
             data,
             currentDate,
         }

@@ -32,7 +32,7 @@ export default {
                 "userName": username.value,
                 "password": password.value
             });
-            console.log(response.data.status);
+            // console.log(response.data.status);
             if(response.data.status==404){
                 message.value = "Tên đăng nhập không tồn tại";
             }
