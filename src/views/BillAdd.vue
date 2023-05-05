@@ -15,7 +15,6 @@
                         <label for="nameCustomer">Tên khách hàng</label>
                         <Field name="nameCustomer" type="text" class="form-control" v-model="data.bill.nameCustomer" />
                         <ErrorMessage name="nameCustomer" class="error-feedback" />
-                        {{ data.bill.nameCustomer }}
                     </div>
                     <div class="form-group">
                         <label for="phone">Số điện thoại</label>
