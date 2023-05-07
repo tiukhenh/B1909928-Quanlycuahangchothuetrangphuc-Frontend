@@ -66,7 +66,7 @@
                             </div>
                             <div class="p-1">
                                 <strong>Loại:</strong>
-                                {{ data.item.loai }}
+                                {{ data.item.loai.ten }}
                             </div>
                             <div class="p-1">
                                 <strong>Màu:</strong>

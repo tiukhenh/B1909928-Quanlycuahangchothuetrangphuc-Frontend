@@ -11,9 +11,12 @@
                         <ErrorMessage name="ten" class="error-feedback" />
                     </div>
                     <div class="form-group">
-                        <label for="loai">Loại</label>
-                        <Field name="loai" type="text" class="form-control" v-model="data.item.loai" />
-                        <ErrorMessage name="loai" class="error-feedback" />
+                        <label for="loai">Loại</label><br>
+                        <!-- <Field name="loai" type="text" class="form-control" v-model="data.item.loai" /> -->
+                        <select v-model="data.type" class="rounded" name="loai">
+                            <option v-for= " type in data.listType " :key="type._id" > {{ type.ten }} </option>
+                        </select>
+
                     </div>
                     <div class="form-group">
                         <label for="mauSac">Màu sắc</label>
@@ -66,17 +69,32 @@ export default {
         const router = useRouter();
         const id = route.params.id;
         const data = reactive({
-            item: {}
+            item: {},
+            listType: [],
+            type: {},
         });
         // console.log(id);
         async function getItem() {
             const response = await axios.get(`http://localhost:3000/api/item/${id}`);
             data.item = response.data;
+            data.type = data.item.loai.ten;
             // console.log(response);
             // console.log(data.item);
         }
         getItem()
+        async function getAllTypes() {
+            const response = await axios.get("http://localhost:3000/api/type");
+            data.listType = response.data;
+        }
+        getAllTypes();
         async function submitItem() {
+            if (data.type != null) {
+                for (var i = 0; i < data.listType.length; i++) {
+                    if (data.listType[i].ten == data.type) {
+                        data.item.loai = data.listType[i];
+                    }
+                }
+            }
             const response = await axios.put(`http://localhost:3000/api/item/${id}`,data.item);
             if(response.status == 200){
                 alert("Ok thanh cong");

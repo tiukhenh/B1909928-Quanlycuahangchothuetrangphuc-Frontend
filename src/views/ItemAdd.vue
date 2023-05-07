@@ -9,7 +9,7 @@
         </div>
         <div class="border border-violet rounded col-9 mx-auto">
             <h4>Thêm sản phẩm</h4>
-            <div class="container col-8" >
+            <div class="container col-8">
                 <Form @submit="submitItem" :validation-schema="itemFormSchema">
                     <div class="form-group">
                         <label for="ten">Tên</label>
@@ -17,8 +17,12 @@
                         <ErrorMessage name="ten" class="error-feedback" />
                     </div>
                     <div class="form-group">
-                        <label for="loai">Loại</label>
-                        <Field name="loai" type="text" class="form-control" v-model="data.item.loai" />
+                        <label for="loai">Loại</label><br>
+                        <!-- <Field name="loai" type="text" class="form-control" v-model="data.item.loai" /> -->
+                        <select v-model="data.type" class="rounded" name="loai">
+                            <option v-for=" type in data.listType "  :key="type._id"> {{ type.ten }} </option>
+                        </select>
+
                         <ErrorMessage name="loai" class="error-feedback" />
                     </div>
                     <div class="form-group">
@@ -68,11 +72,26 @@ export default {
         const route = useRoute();
         const router = useRouter();
         const data = reactive({
-            item: {}
+            item: {},
+            listType: [],
+            type: {},
         });
+        async function getAllTypes() {
+            const response = await axios.get("http://localhost:3000/api/type");
+            data.listType = response.data;
+            
+        }
+        getAllTypes();
         async function submitItem() {
-            const response = await axios.post(`http://localhost:3000/api/item`,data.item);
-            if(response.status == 200){
+            if (data.type != null) {
+                for (var i = 0; i < data.listType.length; i++) {
+                    if (data.listType[i].ten == data.type) {
+                        data.item.loai = data.listType[i];
+                    }
+                }
+            }
+            const response = await axios.post(`http://localhost:3000/api/item`, data.item);
+            if (response.status == 200) {
                 alert("Thêm thành công");
                 router.push("/home");
             }
