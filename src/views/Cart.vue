@@ -87,6 +87,7 @@ export default {
                 }
                 if (data.cartData.length == 0) {
                     localStorage.removeItem("cartData");
+                    data.cartData = [];
                     return;
                 }
                 localStorage.setItem("cartData", JSON.stringify(data.cartData));
@@ -105,7 +106,10 @@ export default {
             router.push("/home");
         }
         function gotoAddBill() {
-            router.push("/bill/add")
+            if(localStorage.getItem("cartData") != null) {
+                 router.push("/bill/add")
+            }
+           
         }
         return {
             ContinueAddCart,

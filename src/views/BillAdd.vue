@@ -70,7 +70,8 @@ export default {
     },
     setup() {
         const router = useRouter();
-        if(localStorage.getItem("cartData")==null){
+        if(localStorage.getItem("cartData") == null){
+            console.log(localStorage.getItem("cartData"));
             router.push("/cart");
         }
         const itemFormSchema = yup.object().shape({
@@ -106,7 +107,7 @@ export default {
             data.bill.ngaytrahientai = data.bill.ngaytra;
             data.bill.products = JSON.parse(localStorage.getItem("cartData"));
             const response = await axios.post("http://localhost:3000/api/bill",data.bill);
-            // console.log(data.bill.products);
+            console.log(data.bill.products);
             for(var i =0 ;i<data.bill.products.length;i++) {
                 await axios.put(`http://localhost:3000/api/item/tinhtrang/${data.bill.products[i]._id}`);
             }

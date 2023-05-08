@@ -225,6 +225,7 @@ export default {
                 }
                 if (data.cartData.length == 0) {
                     localStorage.removeItem("cartData");
+                    data.cartData = [];
                     return;
                 }
                 localStorage.setItem("cartData", JSON.stringify(data.cartData));
